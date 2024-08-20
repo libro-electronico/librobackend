@@ -2,6 +2,7 @@ package chicken
 
 import (
 	"context"
+	"libro-electronico/model"
 	"net"
 	"strconv"
 	"strings"
@@ -11,7 +12,7 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/options"
 	"gopkg.in/mgo.v2/bson"
 )
-func MongoConnect(mconn DBIngfo) (db *mongo.Database, err error) {
+func MongoConnect(mconn model.DBIngfo) (db *mongo.Database, err error) {
     client, err := mongo.Connect(context.TODO(), options.Client().ApplyURI(mconn.DBString))
     if err != nil {
         mconn.DBString = SRVLookup(mconn.DBString)
@@ -59,21 +60,6 @@ func SRVLookup(srvuri string) (mongouri string) {
     return
 }
 
-
-func GetRandomDoc[T any](db *mongo.Database, collection string, size uint) (result []T, err error) {
-	filter := mongo.Pipeline{
-		{{Key: "$sample", Value: bson.D{{Key: "size", Value: size}}}},
-	}
-	ctx := context.Background()
-	cursor, err := db.Collection(collection).Aggregate(ctx, filter)
-	if err != nil {
-		return
-	}
-
-	err = cursor.All(ctx, &result)
-
-	return
-}
 
 func DeleteOneDoc(db *mongo.Database, collection string, filter bson.M) (updateresult *mongo.DeleteResult, err error) {
 	updateresult, err = db.Collection(collection).DeleteOne(context.Background(), filter)

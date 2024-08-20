@@ -2,6 +2,7 @@ package config
 
 import (
 	"libro-electronico/helper/chicken"
+	"libro-electronico/model"
 	"os"
 
 	"go.mongodb.org/mongo-driver/mongo"
@@ -9,7 +10,7 @@ import (
 
 var MongoString string = os.Getenv("MONGOSTRINGOLD")
 
-var mongoinfo = chicken.DBIngfo{
+var mongoinfo = model.DBIngfo{
 	DBString: MongoString,
 	DBName:   "libroelectronico",
 }
