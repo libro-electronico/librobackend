@@ -8,7 +8,7 @@ import (
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
-var MongoString string = os.Getenv("MONGOSTRINGOLD")
+var MongoString string = os.Getenv("MONGO_URI")
 
 var mongoinfo = model.DBIngfo{
 	DBString: MongoString,
