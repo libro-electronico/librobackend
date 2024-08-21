@@ -22,6 +22,7 @@ type User struct {
 	Password string             `json:"password,omitempty" bson:"password,omitempty"`
 }
 
+// login request untuk user
 type LoginRequest struct {
 	Email    string `json:"email"`
 	Password string `json:"password"`
