@@ -6,7 +6,10 @@ import (
 )
 
 func main() {
-	
-	log.Println("Server started on: http://localhost:8080")
-	http.ListenAndServe(":8080", nil)
+    http.HandleFunc("/liberoelectronico", func(w http.ResponseWriter, r *http.Request) {
+        // Your handler logic here
+        w.Write([]byte("Hello, World!"))
+    })
+
+    log.Fatal(http.ListenAndServe(":8080", nil))
 }
