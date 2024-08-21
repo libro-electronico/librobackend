@@ -2,6 +2,7 @@ package helper
 
 import (
 	"encoding/json"
+	"fmt"
 	"log"
 	"net/http"
 )
@@ -50,4 +51,8 @@ func JSON(w http.ResponseWriter, status int, data interface{}) {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(status)
 	json.NewEncoder(w).Encode(data)
+}
+func WebHookHandler(w http.ResponseWriter, r *http.Request) {
+    // Tangani webhook request di sini
+    fmt.Fprintf(w, "Webhook received!")
 }

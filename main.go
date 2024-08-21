@@ -1,15 +1,16 @@
 package main
 
 import (
+	"libro-electronico/helper"
 	"log"
 	"net/http"
 )
 
 func main() {
-    http.HandleFunc("/liberoelectronico", func(w http.ResponseWriter, r *http.Request) {
-        // Your handler logic here
-        w.Write([]byte("Hello, World!"))
-    })
+    // Setup routes
+    http.HandleFunc("/webhook", helper.WebHookHandler)
 
-    log.Fatal(http.ListenAndServe(":8080", nil))
+    // Menjalankan server
+    log.Printf("Server starting on port %s")
+    log.Fatal(http.ListenAndServe(":", nil))
 }

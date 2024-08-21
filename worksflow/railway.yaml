@@ -1,0 +1,38 @@
+name: Railway Deployment
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  Deploy:
+    name: Deploy to Railway
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js (if using Node.js)
+        uses: actions/setup-node@v3
+        with:
+          node-version: "16" # Ganti dengan versi Node.js yang sesuai
+
+      - name: Install dependencies
+        run: |
+          npm install # Ganti dengan perintah instalasi yang sesuai jika menggunakan bahasa lain
+
+      - name: Railway CLI Installation
+        run: |
+          curl -fsSL https://railway.app/cli | sh
+
+      - name: Railway Login
+        run: |
+          railway login --token ${{ secrets.RAILWAY_TOKEN }}
+
+      - name: Deploy to Railway
+        run: |
+          railway up --project ${{ secrets.RAILWAY_PROJECT_ID }}
+
+      - name: Verify Deployment
+        run: |
+          railway status --project ${{ secrets.RAILWAY_PROJECT_ID }}

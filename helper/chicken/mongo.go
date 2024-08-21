@@ -12,6 +12,7 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/options"
 	"gopkg.in/mgo.v2/bson"
 )
+
 func MongoConnect(mconn model.DBIngfo) (db *mongo.Database, err error) {
     client, err := mongo.Connect(context.TODO(), options.Client().ApplyURI(mconn.DBString))
     if err != nil {
