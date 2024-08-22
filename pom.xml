@@ -11,44 +11,6 @@
     <name>My Project</name>
     <description>A simple Maven project</description>
 
-    <!-- Properties -->
-    <properties>
-        <java.version>11</java.version>
-        <spring-boot.version>2.7.9</spring-boot.version>
-    </properties>
-
-    <!-- Dependencies -->
-    <dependencies>
-        <!-- Spring Boot Starter -->
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter</artifactId>
-            <version>${spring-boot.version}</version>
-        </dependency>
-
-        <!-- Spring Boot Starter Web -->
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-web</artifactId>
-            <version>${spring-boot.version}</version>
-        </dependency>
-
-        <!-- Spring Boot Starter Data MongoDB -->
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-data-mongodb</artifactId>
-            <version>${spring-boot.version}</version>
-        </dependency>
-
-        <!-- JUnit for unit testing -->
-        <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-            <version>4.13.2</version>
-            <scope>test</scope>
-        </dependency>
-    </dependencies>
-
     <!-- Build configuration -->
     <build>
         <plugins>
@@ -70,36 +32,43 @@
                 </configuration>
             </plugin>
 
-            <!-- Spring Boot Maven Plugin -->
+            <!-- Spring Boot plugin -->
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
-                <version>${spring-boot.version}</version>
-                <executions>
-                    <execution>
-                        <goals>
-                            <goal>repackage</goal>
-                        </goals>
-                    </execution>
-                </executions>
+                <configuration>
+                    <mainClass>com.example.myproject.MyProjectApplication</mainClass> <!-- Ganti dengan nama kelas utama Anda -->
+                </configuration>
             </plugin>
         </plugins>
     </build>
 
+    <!-- Dependencies -->
+    <dependencies>
+        <!-- JUnit for unit testing -->
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>4.13.2</version>
+            <scope>test</scope>
+        </dependency>
+
+        <!-- Add other dependencies here -->
+        <!-- Example: Spring Boot -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter</artifactId>
+            <version>2.7.9</version>
+        </dependency>
+    </dependencies>
+
     <!-- Repositories -->
     <repositories>
-        <!-- Default Maven Repository -->
-        <repository>
-            <id>central</id>
-            <url>https://repo.maven.apache.org/maven2</url>
-        </repository>
+        <!-- Add additional repositories if needed -->
     </repositories>
 
-    <!-- Plugin Repositories -->
+    <!-- Build plugins -->
     <pluginRepositories>
-        <pluginRepository>
-            <id>central</id>
-            <url>https://repo.maven.apache.org/maven2</url>
-        </pluginRepository>
+        <!-- Add plugin repositories if needed -->
     </pluginRepositories>
 </project>

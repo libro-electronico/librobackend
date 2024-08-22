@@ -1,26 +1,24 @@
-# Stage 1: Build the Go application
-FROM golang:1.20 AS builder
+# Gunakan base image Maven untuk build phase
+FROM maven:3.8.5-openjdk-11 AS builder
 
-# Set the Current Working Directory inside the container
+# Set working directory
 WORKDIR /app
 
-# Copy go mod and sum files
-COPY go.mod go.sum ./
+# Salin pom.xml dan unduh dependensi
+COPY pom.xml ./
+RUN mvn dependency:go-offline
 
-# Download dependencies
-RUN go mod download
+# Salin source code
+COPY src ./src
 
-# Copy the source code into the container
-COPY . .
+# Build aplikasi
+RUN mvn clean package -DskipTests
 
-# Build the Go app
-RUN go build -o main .
+# Gunakan base image yang lebih ringan untuk runtime
+FROM openjdk:11-jre-slim
 
-# Stage 2: Create a lightweight image for running the app
-FROM gcr.io/distroless/base-debian11
+# Salin JAR dari builder
+COPY --from=builder /app/target/my-project-1.0-SNAPSHOT.jar /app/my-project.jar
 
-# Copy the binary from the builder stage
-COPY --from=builder /app/main /app/main
-
-# Command to run the executable
-CMD ["/app/main"]
+# Set command untuk menjalankan aplikasi
+CMD ["java", "-jar", "/app/my-project.jar"]
