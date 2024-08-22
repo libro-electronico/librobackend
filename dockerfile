@@ -1,26 +1,26 @@
-# Gunakan base image yang sesuai
-# FROM golang:1.20 AS builder
+# Stage 1: Build the Go application
+FROM golang:1.20 AS builder
 
-# # Set working directory
-# WORKDIR /app
+# Set the Current Working Directory inside the container
+WORKDIR /app
 
-# # Salin go mod dan sum
-# COPY go.mod go.sum ./
+# Copy go mod and sum files
+COPY go.mod go.sum ./
 
-# # Unduh dependensi
-# RUN go mod download
+# Download dependencies
+RUN go mod download
 
-# # Salin source code
-# COPY . .
+# Copy the source code into the container
+COPY . .
 
-# # Build aplikasi
-# RUN go build -o main .
+# Build the Go app
+RUN go build -o main .
 
-# # Gunakan base image yang lebih ringan untuk runtime
-# FROM gcr.io/distroless/base-debian11
+# Stage 2: Create a lightweight image for running the app
+FROM gcr.io/distroless/base-debian11
 
-# # Salin binary dari builder
-# COPY --from=builder /app/main /app/main
+# Copy the binary from the builder stage
+COPY --from=builder /app/main /app/main
 
-# # Set command untuk menjalankan aplikasi
-# CMD ["/app/main"]
+# Command to run the executable
+CMD ["/app/main"]
