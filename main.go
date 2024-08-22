@@ -1,16 +1,21 @@
 package main
 
 import (
-	"libro-electronico/helper"
 	"log"
 	"net/http"
+	"os"
 )
 
 func main() {
-    // Setup routes
-    http.HandleFunc("/webhook", helper.WebHookHandler)
-
-    // Menjalankan server
-    log.Printf("Server starting on port %s")
-    log.Fatal(http.ListenAndServe(":", nil))
+	port := os.Getenv("PORT")
+	if port == "" {
+		port = "8080" // Default port if not specified
+	}
+	
+	log.Printf("Server starting on port %s", port)
+	
+	err := http.ListenAndServe(":" + port, nil)
+	if err != nil {
+		log.Fatalf("Server failed to start: %v", err)
+	}
 }
