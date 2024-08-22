@@ -17,10 +17,10 @@ func withCORS(next http.HandlerFunc) http.HandlerFunc {
 
 func SetupRoutes() {
 	// Book routes
-	http.HandleFunc("/get/books", withCORS(controller.GetBooks))
-	http.HandleFunc("/post/books/create", withCORS(controller.CreateBook))
-	http.HandleFunc("/put/books/update", withCORS(controller.UpdateBook))
-	http.HandleFunc("/delete/books/delete", withCORS(controller.DeleteBook))
+	http.HandleFunc("/api/books", withCORS(controller.GetBooks))
+	http.HandleFunc("/api/books/create", withCORS(controller.CreateBook))
+	http.HandleFunc("/api/books/update", withCORS(controller.UpdateBook))
+	http.HandleFunc("/api/books/delete", withCORS(controller.DeleteBook))
 
 	// User routes
 	http.HandleFunc("/post/register", withCORS(controller.Register))
