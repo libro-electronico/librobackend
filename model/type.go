@@ -40,3 +40,11 @@ type Book struct {
     Language    string  `json:"language"`    // Bahasa buku
     Available   bool    `json:"available"`   // Status ketersediaan buku
 }
+type Profile struct {
+	Token       string `bson:"token"`
+	Phonenumber string `bson:"phonenumber"`
+	Secret      string `bson:"secret"`
+	URL         string `bson:"url"`
+	QRKeyword   string `bson:"qrkeyword"`
+	PublicKey   string `bson:"publickey"`
+}

@@ -8,6 +8,18 @@ import (
 var Origins = []string{
 	"https://libro-electronico.github.io",
 }
+var Headers = []string{
+	"Origin",
+	"Content-Type",
+	"Accept",
+	"Authorization",
+	"Access-Control-Request-Headers",
+	"Token",
+	"Login",
+	"Access-Control-Allow-Origin",
+	"Bearer",
+	"X-Requested-With",
+}
 
 func SetAccessControlHeaders(w http.ResponseWriter, r *http.Request) bool {
 	// Set CORS headers for the preflight request

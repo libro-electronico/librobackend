@@ -1,48 +1,55 @@
-package routes
+package route
 
 import (
-	"libro-electronico/config"
-	"libro-electronico/controller"
 	"net/http"
+
+	"libro-electronico/config"
+
+	"libro-electronico/controller"
 )
 
-func SetupRoutes() {
-	http.HandleFunc("/api/books", func(w http.ResponseWriter, r *http.Request) {
-		if config.SetAccessControlHeaders(w, r) {
-			return
-		}
-		controller.GetBooks(w, r)
-	})
-	http.HandleFunc("/api/books/create", func(w http.ResponseWriter, r *http.Request) {
-		if config.SetAccessControlHeaders(w, r) {
-			return
-		}
-		controller.CreateBook(w, r)
-	})
-	http.HandleFunc("/api/books/update", func(w http.ResponseWriter, r *http.Request) {
-		if config.SetAccessControlHeaders(w, r) {
-			return
-		}
-		controller.UpdateBook(w, r)
-	})
-	http.HandleFunc("/api/books/delete", func(w http.ResponseWriter, r *http.Request) {
-		if config.SetAccessControlHeaders(w, r) {
-			return
-		}
-		controller.DeleteBook(w, r)
-	})
+func URL(w http.ResponseWriter, r *http.Request) {
+	// Set Access Control Headers
+	if config.SetAccessControlHeaders(w, r) {
+		return
+	}
 
-	// User routes
-	http.HandleFunc("/post/register", func(w http.ResponseWriter, r *http.Request) {
-		if config.SetAccessControlHeaders(w, r) {
-			return
+	config.SetEnv()
+
+	switch r.Method {
+	case http.MethodGet:
+		switch r.URL.Path {
+		case "/":
+			controller.GetHome(w, r)
+		case "/api/get/books":
+			controller.GetBooks(w, r)
+		default:
+			controller.NotFound(w, r)
 		}
-		controller.Register(w, r)
-	})
-	http.HandleFunc("/post/login", func(w http.ResponseWriter, r *http.Request) {
-		if config.SetAccessControlHeaders(w, r) {
-			return
+	case http.MethodPost:
+		switch r.URL.Path {
+		case "/api/post/books":
+			controller.CreateBook(w, r)
+		case "/post/register":
+			controller.Register(w, r)
+		case "/post/login":
+			controller.Login(w, r)
+		default:
+			controller.NotFound(w, r)
 		}
-		controller.Login(w, r)
-	})
+	case http.MethodPut:
+		if r.URL.Path == "/put/books" {
+			controller.UpdateBook(w, r)
+		} else {
+			controller.NotFound(w, r)
+		}
+	case http.MethodDelete:
+		if r.URL.Path == "/delete/books" {
+			controller.DeleteBook(w, r)
+		} else {
+			controller.NotFound(w, r)
+		}
+	default:
+		controller.NotFound(w, r)
+	}
 }

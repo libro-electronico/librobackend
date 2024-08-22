@@ -1,17 +1,33 @@
 package config
 
 import (
-	"libro-electronico/helper"
 	"log"
-	"os"
+
+	"libro-electronico/helper"
+	"libro-electronico/helper/chicken"
+	"libro-electronico/model"
+
+	"gopkg.in/mgo.v2/bson"
 )
+
 var IPPort, Net = helper.GetAddress()
 
-func getEnv(key, fallback string) string {
-    value, exists := os.LookupEnv(key)
-    if !exists {
-        log.Printf("Warning: Environment variable %s not set, using default value", key)
-        return fallback
-    }
-    return value
+var PhoneNumber string
+
+
+func SetEnv() {
+	if ErrorMongoconn != nil {
+		log.Println(ErrorMongoconn.Error())
+	}
+
+	// Mengambil dokumen pertama dari koleksi "profile"
+	profile, err := chicken.GetOneDoc[model.Profile](Mongoconn, "profile", bson.M{})
+	if err != nil {
+		log.Println(err)
+		return
+	}
+
+	// Set nilai-nilai dari profile yang diambil
+	PublicKeyWhatsAuth = profile.PublicKey
+	WAAPIToken = profile.Token
 }

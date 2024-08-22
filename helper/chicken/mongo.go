@@ -13,52 +13,66 @@ import (
 	"gopkg.in/mgo.v2/bson"
 )
 
+// MongoConnect establishes a connection to the MongoDB database.
 func MongoConnect(mconn model.DBIngfo) (db *mongo.Database, err error) {
-    client, err := mongo.Connect(context.TODO(), options.Client().ApplyURI(mconn.DBString))
-    if err != nil {
-        mconn.DBString = SRVLookup(mconn.DBString)
-        client, err = mongo.Connect(context.TODO(), options.Client().ApplyURI(mconn.DBString))
-        if err != nil {
-            return
-        }
-    }
-    db = client.Database(mconn.DBName)
-    return
+	client, err := mongo.Connect(context.TODO(), options.Client().ApplyURI(mconn.DBString))
+	if err != nil {
+		mconn.DBString = SRVLookup(mconn.DBString)
+		client, err = mongo.Connect(context.TODO(), options.Client().ApplyURI(mconn.DBString))
+		if err != nil {
+			return nil, err
+		}
+	}
+	db = client.Database(mconn.DBName)
+	return db, nil
 }
 
+// SRVLookup performs an SRV lookup and returns the modified MongoDB URI.
 func SRVLookup(srvuri string) (mongouri string) {
-    atsplits := strings.Split(srvuri, "@")
-    userpass := strings.Split(atsplits[0], "//")[1]
-    mongouri = "mongodb://" + userpass + "@"
-    slashsplits := strings.Split(atsplits[1], "/")
-    domain := slashsplits[0]
-    dbname := slashsplits[1]
-    
-    r := &net.Resolver{
-        PreferGo: true,
-        Dial: func(ctx context.Context, network, address string) (net.Conn, error) {
-            d := net.Dialer{
-                Timeout: time.Millisecond * time.Duration(10000),
-            }
-            return d.DialContext(ctx, network, "8.8.8.8:53")
-        },
-    }
-    _, srvs, err := r.LookupSRV(context.Background(), "mongodb", "tcp", domain)
-    if err != nil {
-        panic(err)
-    }
-    var srvlist string
-    for _, srv := range srvs {
-        srvlist += strings.TrimSuffix(srv.Target, ".") + ":" + strconv.FormatUint(uint64(srv.Port), 10) + ","
-    }
+	// Split the SRV URI to extract user/pass and domain/dbname
+	atsplits := strings.Split(srvuri, "@")
+	userpass := strings.Split(atsplits[0], "//")[1]
+	mongouri = "mongodb://" + userpass + "@"
+	slashsplits := strings.Split(atsplits[1], "/")
+	domain := slashsplits[0]
+	dbname := slashsplits[1]
 
-    txtrecords, _ := r.LookupTXT(context.Background(), domain)
-    var txtlist string
-    for _, txt := range txtrecords {
-        txtlist += txt
-    }
-    mongouri = mongouri + strings.TrimSuffix(srvlist, ",") + "/" + dbname + "?ssl=true&" + txtlist
-    return
+	// Set up DNS resolver
+	r := &net.Resolver{
+		PreferGo: true,
+		Dial: func(ctx context.Context, network, address string) (net.Conn, error) {
+			d := net.Dialer{
+				Timeout: time.Second * 10,
+			}
+			return d.DialContext(ctx, network, "8.8.8.8:53")
+		},
+	}
+
+	// Perform SRV lookup
+	_, srvs, err := r.LookupSRV(context.Background(), "mongodb", "tcp", domain)
+	if err != nil {
+		panic("SRV lookup failed: " + err.Error())
+	}
+
+	// Build the SRV list
+	var srvlist string
+	for _, srv := range srvs {
+		srvlist += strings.TrimSuffix(srv.Target, ".") + ":" + strconv.FormatUint(uint64(srv.Port), 10) + ","
+	}
+
+	// Lookup TXT records
+	txtrecords, err := r.LookupTXT(context.Background(), domain)
+	if err != nil {
+		panic("TXT lookup failed: " + err.Error())
+	}
+	var txtlist string
+	for _, txt := range txtrecords {
+		txtlist += txt + "&"
+	}
+
+	// Construct the MongoDB URI
+	mongouri = mongouri + strings.TrimSuffix(srvlist, ",") + "/" + dbname + "?ssl=true&" + strings.TrimSuffix(txtlist, "&")
+	return mongouri
 }
 
 
