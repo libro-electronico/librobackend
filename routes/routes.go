@@ -6,23 +6,43 @@ import (
 	"net/http"
 )
 
-func withCORS(next http.HandlerFunc) http.HandlerFunc {
-	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+func SetupRoutes() {
+	http.HandleFunc("/api/books", func(w http.ResponseWriter, r *http.Request) {
 		if config.SetAccessControlHeaders(w, r) {
 			return
 		}
-		next.ServeHTTP(w, r)
+		controller.GetBooks(w, r)
 	})
-}
-
-func SetupRoutes() {
-	// Book routes
-	http.HandleFunc("/api/books", withCORS(controller.GetBooks))
-	http.HandleFunc("/api/books/create", withCORS(controller.CreateBook))
-	http.HandleFunc("/api/books/update", withCORS(controller.UpdateBook))
-	http.HandleFunc("/api/books/delete", withCORS(controller.DeleteBook))
+	http.HandleFunc("/api/books/create", func(w http.ResponseWriter, r *http.Request) {
+		if config.SetAccessControlHeaders(w, r) {
+			return
+		}
+		controller.CreateBook(w, r)
+	})
+	http.HandleFunc("/api/books/update", func(w http.ResponseWriter, r *http.Request) {
+		if config.SetAccessControlHeaders(w, r) {
+			return
+		}
+		controller.UpdateBook(w, r)
+	})
+	http.HandleFunc("/api/books/delete", func(w http.ResponseWriter, r *http.Request) {
+		if config.SetAccessControlHeaders(w, r) {
+			return
+		}
+		controller.DeleteBook(w, r)
+	})
 
 	// User routes
-	http.HandleFunc("/post/register", withCORS(controller.Register))
-	http.HandleFunc("/post/login", withCORS(controller.Login))
+	http.HandleFunc("/post/register", func(w http.ResponseWriter, r *http.Request) {
+		if config.SetAccessControlHeaders(w, r) {
+			return
+		}
+		controller.Register(w, r)
+	})
+	http.HandleFunc("/post/login", func(w http.ResponseWriter, r *http.Request) {
+		if config.SetAccessControlHeaders(w, r) {
+			return
+		}
+		controller.Login(w, r)
+	})
 }
