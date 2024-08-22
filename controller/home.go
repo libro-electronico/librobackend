@@ -2,14 +2,14 @@ package controller
 
 import (
 	"libro-electronico/helper"
-	"libro-electronico/helper/chicken"
+	"libro-electronico/helper/at"
 	"libro-electronico/model"
 	"net/http"
 )
 
 func GetHome(respw http.ResponseWriter, req *http.Request) {
 	var resp model.Response
-	resp.Response = chicken.GetIPaddress()
+	resp.Response = at.GetIPaddress()
 	helper.WriteJSON(respw, http.StatusOK, resp)
 }
 

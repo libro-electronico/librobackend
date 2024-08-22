@@ -2,6 +2,7 @@ package helper
 
 import (
 	"context"
+	"libro-electronico/model"
 	"net"
 	"strconv"
 	"strings"
@@ -12,7 +13,7 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
-func MongoConnect(mconn model.DBInfo) (db *mongo.Database, err error) {
+func MongoConnect(mconn model.DBIngfo) (db *mongo.Database, err error) {
 	client, err := mongo.Connect(context.TODO(), options.Client().ApplyURI(mconn.DBString))
 	if err != nil {
 		mconn.DBString = SRVLookup(mconn.DBString)

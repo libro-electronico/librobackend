@@ -29,7 +29,7 @@ func Register(w http.ResponseWriter, r *http.Request) {
 	user.Password = string(hashedPassword)
 	user.ID = primitive.NewObjectID()
 
-	collection := config.DB.Collection("user_login")
+	collection := config.Mongoconn.Collection("user_login")
 	_, err = collection.InsertOne(context.Background(), user)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -49,7 +49,7 @@ func Login(w http.ResponseWriter, r *http.Request) {
 	var loginRequest model.LoginRequest
 	_ = json.NewDecoder(r.Body).Decode(&loginRequest)
 
-	collection := config.DB.Collection("user_login")
+	collection := config.Mongoconn.Collection("user_login")
 	var user model.User
 	err := collection.FindOne(context.Background(), bson.M{"email": loginRequest.Email}).Decode(&user)
 	if err != nil {
