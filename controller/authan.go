@@ -17,55 +17,29 @@ func Register(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
 		return
 	}
-
 	var user model.User
+	_ = json.NewDecoder(r.Body).Decode(&user)
 
-	// Decode the request body into the User struct
-	err := json.NewDecoder(r.Body).Decode(&user)
-	if err != nil {
-		http.Error(w, "Invalid request payload", http.StatusBadRequest)
-		return
-	}
-
-	// Validate input fields
-	if user.Username == "" || user.Email == "" || user.Password == "" {
-		http.Error(w, "Missing required fields", http.StatusBadRequest)
-		return
-	}
-
-	// Hash the password
+	// Hash password
 	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(user.Password), bcrypt.DefaultCost)
 	if err != nil {
-		http.Error(w, "Error hashing password", http.StatusInternalServerError)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 	user.Password = string(hashedPassword)
 	user.ID = primitive.NewObjectID()
 
-	// Ensure that the DB connection is initialized
-	if config.DB == nil {
-		http.Error(w, "Database connection not initialized", http.StatusInternalServerError)
-		return
-	}
-
-	// Get the MongoDB collection
 	collection := config.DB.Collection("user_login")
-
-	// Insert the user into the collection
 	_, err = collection.InsertOne(context.Background(), user)
 	if err != nil {
-		http.Error(w, "Error inserting user into database", http.StatusInternalServerError)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
-	// Respond with the created user
 	w.WriteHeader(http.StatusCreated)
-	err = json.NewEncoder(w).Encode(user)
-	if err != nil {
-		http.Error(w, "Error encoding response", http.StatusInternalServerError)
-		return
-	}
+	json.NewEncoder(w).Encode(user)
 }
+
 
 func Login(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodPost {

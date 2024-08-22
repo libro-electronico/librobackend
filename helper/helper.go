@@ -1,4 +1,4 @@
-package chicken
+package helper
 
 import (
 	"io"

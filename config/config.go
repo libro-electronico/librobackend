@@ -1,33 +1,26 @@
 package config
 
 import (
+	"libro-electronico/helper"
+	"libro-electronico/helper/atdb"
+	"libro-electronico/model"
 	"log"
 
-	"libro-electronico/helper"
-	"libro-electronico/helper/chicken"
-	"libro-electronico/model"
-
-	"gopkg.in/mgo.v2/bson"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
 var IPPort, Net = helper.GetAddress()
 
 var PhoneNumber string
 
-
 func SetEnv() {
 	if ErrorMongoconn != nil {
 		log.Println(ErrorMongoconn.Error())
 	}
-
-	// Mengambil dokumen pertama dari koleksi "profile"
-	profile, err := chicken.GetOneDoc[model.Profile](Mongoconn, "profile", bson.M{})
+	profile, err := atdb.GetOneDoc[model.Profile](Mongoconn, "profile", primitive.M{})
 	if err != nil {
 		log.Println(err)
-		return
 	}
-
-	// Set nilai-nilai dari profile yang diambil
 	PublicKeyWhatsAuth = profile.PublicKey
 	WAAPIToken = profile.Token
 }

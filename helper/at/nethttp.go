@@ -1,4 +1,4 @@
-package helper
+package at
 
 import (
 	"encoding/json"
@@ -41,13 +41,4 @@ func WriteJSON(respw http.ResponseWriter, statusCode int, content interface{}) {
 func WriteString(respw http.ResponseWriter, statusCode int, content string) {
 	respw.WriteHeader(statusCode)
 	respw.Write([]byte(content))
-}
-func Message(message string) map[string]string {
-	return map[string]string{"message": message}
-}
-
-func JSON(w http.ResponseWriter, status int, data interface{}) {
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(status)
-	json.NewEncoder(w).Encode(data)
 }
