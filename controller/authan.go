@@ -17,13 +17,18 @@ func Register(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
 		return
 	}
+
 	var user model.User
-	_ = json.NewDecoder(r.Body).Decode(&user)
+	err := json.NewDecoder(r.Body).Decode(&user)
+	if err != nil {
+		http.Error(w, "Invalid request payload", http.StatusBadRequest)
+		return
+	}
 
 	// Hash password
 	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(user.Password), bcrypt.DefaultCost)
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+		http.Error(w, "Failed to hash password", http.StatusInternalServerError)
 		return
 	}
 	user.Password = string(hashedPassword)
@@ -32,7 +37,7 @@ func Register(w http.ResponseWriter, r *http.Request) {
 	collection := config.Mongoconn.Collection("user_login")
 	_, err = collection.InsertOne(context.Background(), user)
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+		http.Error(w, "Failed to register user", http.StatusInternalServerError)
 		return
 	}
 
@@ -46,12 +51,17 @@ func Login(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
 		return
 	}
+
 	var loginRequest model.LoginRequest
-	_ = json.NewDecoder(r.Body).Decode(&loginRequest)
+	err := json.NewDecoder(r.Body).Decode(&loginRequest)
+	if err != nil {
+		http.Error(w, "Invalid request payload", http.StatusBadRequest)
+		return
+	}
 
 	collection := config.Mongoconn.Collection("user_login")
 	var user model.User
-	err := collection.FindOne(context.Background(), bson.M{"email": loginRequest.Email}).Decode(&user)
+	err = collection.FindOne(context.Background(), bson.M{"email": loginRequest.Email}).Decode(&user)
 	if err != nil {
 		http.Error(w, "Invalid email or password", http.StatusUnauthorized)
 		return

@@ -8,6 +8,8 @@ import (
 	"net/http"
 	"os"
 	"strings"
+
+	"golang.org/x/crypto/bcrypt"
 )
 
 func URLParam(reqpath string, url string) bool {
@@ -86,4 +88,31 @@ func GetIPaddress() string {
 		log.Fatal(err)
 	}
 	return string(body)
+}
+
+// HashPassword hashes the password using bcrypt.
+func HashPassword(password string) (string, error) {
+	// Generate a bcrypt hash of the password
+	hash, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
+	if err != nil {
+		return "", err
+	}
+	return string(hash), nil
+}
+
+// CheckPasswordHash compares the hashed password with the provided password.
+func CheckPasswordHash(password, hashedPassword string) bool {
+	// Compare the password with the hash
+	err := bcrypt.CompareHashAndPassword([]byte(hashedPassword), []byte(password))
+	if err != nil {
+		log.Println("Password comparison failed:", err)
+		return false
+	}
+	return true
+}
+
+// ValidatePassword compares a plain text password with a hashed password.
+func ValidatePassword(plainPassword, hashedPassword string) bool {
+	err := bcrypt.CompareHashAndPassword([]byte(hashedPassword), []byte(plainPassword))
+	return err == nil
 }

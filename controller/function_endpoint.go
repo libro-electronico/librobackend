@@ -171,3 +171,9 @@ func DeleteBook(w http.ResponseWriter, r *http.Request) {
 
 	at.WriteJSON(w, http.StatusOK, fmt.Sprintf("Book with ID: %s has been successfully deleted", book.ID))
 }
+
+// NotAllowed handles HTTP methods that are not allowed on a particular endpoint.
+func NotAllowed(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(http.StatusMethodNotAllowed)
+	fmt.Fprintf(w, "405 - Method Not Allowed: %s method is not allowed on this endpoint.", r.Method)
+}

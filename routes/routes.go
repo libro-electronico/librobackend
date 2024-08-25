@@ -8,48 +8,70 @@ import (
 )
 
 func URL(w http.ResponseWriter, r *http.Request) {
-	// Set Access Control Headers
+	// Set Access Control Headers (CORS)
 	if config.SetAccessControlHeaders(w, r) {
-		return
+		// Handle preflight OPTIONS request
+		if r.Method == http.MethodOptions {
+			w.WriteHeader(http.StatusOK)
+			return
+		}
 	}
 
+	// Set environment variables if needed
 	config.SetEnv()
 
 	switch r.Method {
 	case http.MethodGet:
-		switch r.URL.Path {
-		case "/":
-			controller.GetHome(w, r)
-		case "/api/get/books":
-			controller.GetBooks(w, r) // Endpoint untuk GET request (Mendapatkan daftar buku)
-		default:
-			controller.NotFound(w, r)
-		}
+		handleGet(w, r)
 	case http.MethodPost:
-		switch r.URL.Path {
-		case "/api/post/books":
-			controller.PostBook(w, r) // Endpoint untuk POST request (Membuat buku baru)
-		case "/post/register":
-			controller.Register(w, r)
-		case "/post/login":
-			controller.Login(w, r)
-		default:
-			controller.NotFound(w, r)
-		}
+		handlePost(w, r)
 	case http.MethodPut:
-		switch r.URL.Path {
-		case "/api/put/books":
-			controller.UpdateBook(w, r) // Endpoint untuk PUT request (Mengupdate buku)
-		default:
-			controller.NotFound(w, r)
-		}
+		handlePut(w, r)
 	case http.MethodDelete:
-		switch r.URL.Path {
-		case "/api/delete/books":
-			controller.DeleteBook(w, r) // Endpoint untuk DELETE request (Menghapus buku)
-		default:
-			controller.NotFound(w, r)
-		}
+		handleDelete(w, r)
+	default:
+		w.WriteHeader(http.StatusMethodNotAllowed)
+		controller.NotAllowed(w, r)
+	}
+}
+
+func handleGet(w http.ResponseWriter, r *http.Request) {
+	switch r.URL.Path {
+	case "/":
+		controller.GetHome(w, r)
+	case "/api/get/books":
+		controller.GetBooks(w, r)
+	default:
+		controller.NotFound(w, r)
+	}
+}
+
+func handlePost(w http.ResponseWriter, r *http.Request) {
+	switch r.URL.Path {
+	case "/api/post/books":
+		controller.PostBook(w, r)
+	case "/post/register":
+		controller.Register(w, r)
+	case "/post/login":
+		controller.Login(w, r)
+	default:
+		controller.NotFound(w, r)
+	}
+}
+
+func handlePut(w http.ResponseWriter, r *http.Request) {
+	switch r.URL.Path {
+	case "/api/put/books":
+		controller.UpdateBook(w, r)
+	default:
+		controller.NotFound(w, r)
+	}
+}
+
+func handleDelete(w http.ResponseWriter, r *http.Request) {
+	switch r.URL.Path {
+	case "/api/delete/books":
+		controller.DeleteBook(w, r)
 	default:
 		controller.NotFound(w, r)
 	}
