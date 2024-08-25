@@ -24,6 +24,7 @@ type User struct {
 
 // login request untuk user
 type LoginRequest struct {
+	Username string `json:"username"`
 	Email    string `json:"email"`
 	Password string `json:"password"`
 }
