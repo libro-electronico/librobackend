@@ -1,24 +1,27 @@
-# Gunakan base image untuk build Go
-FROM golang:1.19-alpine AS builder
+# Use the official Golang image for the build stage
+FROM golang:1.20-alpine AS builder
 
-# Set working directory
+# Set the working directory inside the container
 WORKDIR /app
 
-# Salin go.mod dan go.sum jika ada
+# Copy go.mod and go.sum to download dependencies
 COPY go.mod go.sum ./
 RUN go mod download
 
-# Salin seluruh kode sumber
+# Copy the rest of the application code
 COPY . .
 
-# Build aplikasi
-RUN go build -o librobackend
+# Build the Go app
+RUN go build -o librobackend ./run/main.go
 
-# Gunakan base image yang lebih ringan untuk runtime
+# Use a minimal base image to run the Go app
 FROM alpine:latest
 
-# Salin binary dari builder
-COPY --from=builder /app/librobackend /app/librobackend
+# Set the working directory inside the container
+WORKDIR /root/
 
-# Set command untuk menjalankan aplikasi
-CMD ["/app/librobackend"]
+# Copy the built Go app from the builder stage
+COPY --from=builder /app/librobackend .
+
+# Command to run the Go app
+CMD ["./librobackend"]
