@@ -1,27 +1,28 @@
-# Use the official Golang image for the build stage
-FROM golang:1.20-alpine AS builder
+# Start with an official Golang image
+FROM golang:1.19-alpine as builder
 
-# Set the working directory inside the container
+# Set the current working directory inside the container
 WORKDIR /app
 
-# Copy go.mod and go.sum to download dependencies
+# Copy go.mod and go.sum files
 COPY go.mod go.sum ./
+
+# Download all dependencies. Dependencies will be cached if the go.mod and go.sum files are not changed
 RUN go mod download
 
-# Copy the rest of the application code
+# Copy the source code into the container
 COPY . .
 
 # Build the Go app
-RUN go build -o librobackend ./run/main.go
+RUN go build -o /goapp
 
-# Use a minimal base image to run the Go app
+# Start a new stage from scratch
 FROM alpine:latest
 
-# Set the working directory inside the container
 WORKDIR /root/
 
-# Copy the built Go app from the builder stage
-COPY --from=builder /app/librobackend .
+# Copy the Pre-built binary file from the previous stage
+COPY --from=builder /goapp .
 
-# Command to run the Go app
-CMD ["./librobackend"]
+# Command to run the executable
+CMD ["./goapp"]
