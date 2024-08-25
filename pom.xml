@@ -9,6 +9,7 @@
 
     <properties>
         <java.version>11</java.version>
+        <spring.boot.version>2.7.9</spring.boot.version>
     </properties>
 
     <dependencies>
@@ -16,6 +17,7 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter</artifactId>
+            <version>${spring.boot.version}</version>
         </dependency>
     </dependencies>
 
@@ -24,6 +26,7 @@
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
+                <version>${spring.boot.version}</version>
                 <configuration>
                     <mainClass>com.example.MainClass</mainClass>
                 </configuration>
