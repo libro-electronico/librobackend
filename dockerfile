@@ -1,24 +1,24 @@
-# Use Maven image to build the project
+# Gunakan base image Maven untuk build phase
 FROM maven:3.8.5-openjdk-11 AS builder
 
 # Set working directory
 WORKDIR /app
 
-# Copy pom.xml and download dependencies
+# Salin pom.xml dan unduh dependensi
 COPY pom.xml ./
 RUN mvn dependency:go-offline
 
-# Copy source code
+# Salin source code
 COPY src ./src
 
-# Build the application
+# Build aplikasi
 RUN mvn clean package -DskipTests
 
-# Use a lightweight OpenJDK image to run the application
+# Gunakan base image yang lebih ringan untuk runtime
 FROM openjdk:11-jre-slim
 
-# Copy the JAR file from the builder stage
+# Salin JAR dari builder
 COPY --from=builder /app/target/librobackend-1.0-SNAPSHOT.jar /app/librobackend.jar
 
-# Set the command to run the application
+# Set command untuk menjalankan aplikasi
 CMD ["java", "-jar", "/app/librobackend.jar"]
