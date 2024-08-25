@@ -6,10 +6,10 @@
 
     <!-- Project information -->
     <groupId>com.example</groupId>
-    <artifactId>my-project</artifactId>
+    <artifactId>librobackend</artifactId>
     <version>1.0-SNAPSHOT</version>
-    <name>My Project</name>
-    <description>A simple Spring Boot project</description>
+    <name>Libro Backend</name>
+    <description>A simple Spring Boot project for the Libro application</description>
 
     <!-- Parent POM for Spring Boot -->
     <parent>

@@ -21,10 +21,10 @@ FROM openjdk:11-jre-slim
 WORKDIR /app
 
 # Copy the jar file from the builder stage
-COPY --from=builder /app/target/my-project-1.0-SNAPSHOT.jar /app/my-project.jar
+COPY --from=builder /app/target/librobackend-1.0-SNAPSHOT.jar /app/librobackend.jar
 
 # Expose the port the app runs on
 EXPOSE 8080
 
 # Command to run the application
-CMD ["java", "-jar", "/app/my-project.jar"]
+CMD ["java", "-jar", "/app/librobackend.jar"]
