@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	route "libro-electronico/routes"
 	"log"
 	"net/http"
 	"os"
@@ -18,9 +19,7 @@ func main() {
 
 	// Inisialisasi router atau handler
 	mux := http.NewServeMux()
-	mux.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-		w.Write([]byte("Hello, World!"))
-	})
+	mux.HandleFunc("/", route.URL) // Menggunakan handler dari package route
 
 	// Membuat server
 	server := &http.Server{
